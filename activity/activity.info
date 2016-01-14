@@ -3,4 +3,4 @@ name = CollabEdit
 activity_version = 1
 bundle_id = org.sugarlabs.CollabEdit
 exec = sugar-activity activity.CollabEditActivity
-icon = icon
+icon = icon.sugar
