@@ -11,6 +11,11 @@ from gi.repository import GObject
 
 class Buffer(Gtk.TextBuffer):
 
+    __gsignals__ = {
+        "tag-applied": (GObject.SIGNAL_RUN_FIRST, None, [str, int, int]),
+        "tag-removed": (GObject.SIGNAL_RUN_FIRST, None, [str, int, int])
+    }
+
     def __init__(self):
         Gtk.TextBuffer.__init__(self)
 
@@ -26,7 +31,8 @@ class Buffer(Gtk.TextBuffer):
         tags = {
             "bold": self.tag_bold,
             "italic": self.tag_italic,
-            "underline": self.tag_underline
+            "underline": self.tag_underline,
+            "cursor": self.tag_curosr
         }
 
         return tags[tag]
@@ -41,9 +47,11 @@ class Buffer(Gtk.TextBuffer):
 
         if apply_tag:
             self.apply_tag_by_name(tag, start, end)
+            self.emit("tag-applied", tag, start.get_offset(), end.get_offset())
 
         else:
             self.remove_tag_by_name(tag, start, end)
+            self.emit("tag-removed", tag, start.get_offset(), end.get_offset())
 
     def get_cursor_position(self):
         return self.props.cursor_position
@@ -86,14 +94,20 @@ class View(Gtk.ScrolledWindow):
 
     __gsignals__ = {
         "insert-char": (GObject.SIGNAL_RUN_FIRST, None, [int, int]),
-        "cursor-position-changed": (GObject.SIGNAL_RUN_FIRST, None, [int])
+        "cursor-position-changed": (GObject.SIGNAL_RUN_FIRST, None, [int]),
+        "tag-applied": (GObject.SIGNAL_RUN_FIRST, None, [str, int, int]),
+        "tag-removed": (GObject.SIGNAL_RUN_FIRST, None, [str, int, int])
     }
 
     def __init__(self):
         Gtk.ScrolledWindow.__init__(self)
 
+        self.cursors = {}
+
         self.buffer = Buffer()
         self.buffer.connect("notify::cursor-position", self.__cursor_position_cb)
+        self.buffer.connect("tag-applied", self.__tag_applied_cb)
+        self.buffer.connect("tag-removed", self.__tag_removed_cb)
 
         self.view = Gtk.TextView.new_with_buffer(self.buffer)
         self.view.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
@@ -111,6 +125,12 @@ class View(Gtk.ScrolledWindow):
 
     def __cursor_position_cb(self, buffer, *args):
         self.emit("cursor-position-changed", self.buffer.get_cursor_position())
+
+    def __tag_applied_cb(self, buffer, tag, start, end):
+        self.emit("tag-applied", tag, start, end)
+
+    def __tag_removed_cb(self, buffer, tag, start, end):
+        self.emit("tag-removed", tag, start, end)
 
     def insert_at_position(self, string, position):
         cursor = self.buffer.get_cursor_position()
@@ -134,4 +154,25 @@ class View(Gtk.ScrolledWindow):
 
     def check_tag_at_offset(self, tag, position):
         return self.buffer.check_tag_at_offset(tag, position)
+
+    def set_other_cursor(self, id, position):
+        self.cursors[id] = position
+
+        start, end = self.buffer.get_bounds()
+        self.buffer.remove_tag(self.buffer.tag_curosr, start, end)
+
+        for id in self.cursors:
+            start = self.buffer.get_iter_at_offset(self.cursors[id] - 1)
+            end = self.buffer.get_iter_at_offset(self.cursors[id] + 1)
+            self.buffer.apply_tag(self.buffer.tag_curosr, start, end)
+
+    def insert_tag(self, tag, start, end):
+        start = self.buffer.get_iter_at_offset(start)
+        end = self.buffer.get_iter_at_offset(end)
+        self.buffer.apply_tag_by_name(tag, start, end)
+
+    def remove_tag(self, tag, start, end):
+        start = self.buffer.get_iter_at_offset(start)
+        end = self.buffer.get_iter_at_offset(end)
+        self.buffer.remove_tag_by_name(tag, start, end)
 

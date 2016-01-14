@@ -36,6 +36,8 @@ class CollabEdit(Gtk.VBox):
         self.view = View()
         self.view.connect("insert-char", self.__insert_char_cb)
         self.view.connect("cursor-position-changed", self.__cursor_position_changed_cb)
+        self.view.connect("tag-applied", self.__tag_applied_cb)
+        self.view.connect("tag-removed", self.__tag_removed_cb)
         self.pack_start(self.view, True, True, 0)
 
     def __message_cb(self, collab, buddy, msg):
@@ -43,38 +45,49 @@ class CollabEdit(Gtk.VBox):
         if action is None:
             return
 
-        if action == "insert":
+        elif action == "insert":
             self.view.insert_at_position(msg.get("key"), msg.get("position"))
 
-        #    self.add_item(*args)
-        #elif action == 'delete_row':
-        #    self._main_list.delete(args)
-        #elif action == 'edit_item':
-        #    self._main_list.edited_via_collab(msg.get('path'), args)
-        #else:
-        #    logging.error('Got message that is weird %r', msg)
+        elif action == "curosr_moved":
+            self.view.draw_other_cursor(msg.get("id"), msg.get("position"))
+
+        elif action == "insert_tag":
+            self.view.insert_tag(msg.get("tag"), msg.get("start"), msg.get("end"))
+
+        elif action == "remove_tag":
+            self.view.remove_tag(msg.get("tag"), msg.get("start"), msg.get("end"))
 
     def __joined_cb(self, sender):
         if self.collab._leader:
             return
 
-        self.collab.post(dict(
-            action='init_request'))#,
-            #res_id=self._id))
+        self.collab.post(dict(action='init_request',
+                              res_id=10))  # How get an unique id?
 
     def __insert_char_cb(self, view, key, position):
         if key in utils.LETTERS_KEYS:
-            self.collab.post(dict(
-                action="insert",
-                key=Gdk.keyval_name(key),
-                position=position))
+            self.collab.post(dict(action="insert",
+                                  key=Gdk.keyval_name(key),
+                                  position=position))
 
     def __cursor_position_changed_cb(self, view, position):
-        self.collab.post(dict(
-            action="cursor_moved",
-            position=position))
+        self.collab.post(dict(action="cursor_moved",
+                              id=10,  # How get an unique id?
+                              position=position))
 
         self.emit("cursor-position-changed", position)
+
+    def __tag_applied_cb(self, buffer, tag, start, end):
+        self.collab.post(dict(action="insert_tag",
+                              tag=tag,
+                              start=start,
+                              end=end))
+
+    def __tag_removed_cb(self, buffer, tag, start, end):
+        self.collab.post(dict(action="remove_tag",
+                              tag=tag,
+                              start=start,
+                              end=end))
 
     def toggle_bold(self):
         self.view.toggle_bold()

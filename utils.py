@@ -65,5 +65,6 @@ OTHER_KEYS = [
     Gdk.KEY_Up,
     Gdk.KEY_Down,
     Gdk.KEY_Left,
-    Gdk.KEY_Right
+    Gdk.KEY_Right,
+    Gdk.KEY_space
 ]
