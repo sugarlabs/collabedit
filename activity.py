@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import collabedit
+from gettext import gettext as _
+
 import gi
 gi.require_version("Gtk", "3.0")
-
-import collabedit
 
 from gi.repository import Gtk
 
@@ -15,6 +16,7 @@ from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.graphics.toolbarbox import ToolbarBox
 from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toolbarbox import ToolbarButton
+from sugar3.graphics.toggletoolbutton import ToggleToolButton
 
 
 class CollabEditActivity(activity.Activity):
@@ -27,11 +29,17 @@ class CollabEditActivity(activity.Activity):
         self.set_toolbar_box(self.toolbarbox)
 
         self.edit = collabedit.CollabEdit(self)
+        self.edit.connect("cursor-position-changed", self._cursor_positon_changed_cb)
         self.set_canvas(self.edit)
 
         self.setup_toolbar()
 
         self.show_all()
+
+    def _cursor_positon_changed_cb(self, edit, pos):
+        self.button_bold.props.active = self.edit.check_tag_at_offset("bold", pos)
+        self.button_italic.props.active = self.edit.check_tag_at_offset("italic", pos)
+        self.button_underline.props.active = self.edit.check_tag_at_offset("underline", pos)
 
     def setup_toolbar(self):
         activity_button = ActivityToolbarButton(self)
@@ -44,21 +52,23 @@ class CollabEditActivity(activity.Activity):
 
         edit_toolbar.insert(Gtk.SeparatorToolItem(), -1)
 
-        ## FIXME: arreglar iconos, estos no se ven
-        button_bold = ToolButton(stock_id="format-text-bold")
-        edit_toolbar.insert(button_bold, -1)
+        self.button_bold = ToggleToolButton("format-text-bold")
+        self.button_bold.set_tooltip(_("Bold"))
+        self.button_bold.props.accelerator = "<Ctrl>B"
+        self.button_bold.connect("toggled", lambda button: self.edit.toggle_bold())
+        edit_toolbar.insert(self.button_bold, -1)
 
-        button_italic = ToolButton(stock_id="format-text-italic")
-        edit_toolbar.insert(button_italic, -1)
+        self.button_italic = ToggleToolButton("format-text-italic")
+        self.button_italic.set_tooltip(_("Italic"))
+        self.button_italic.props.accelerator = "<Ctrl>I"
+        self.button_italic.connect("toggled", lambda button: self.edit.toggle_italic())
+        edit_toolbar.insert(self.button_italic, -1)
 
-        button_underline = Gtk.ToolButton(stock_id="format-text-underline")
-        edit_toolbar.insert(button_underline, -1)
-
-        #button_bold.connect("clicked", self.on_button_clicked, self.tag_bold)
-        #button_italic.connect("clicked", self.on_button_clicked,
-        #    self.tag_italic)
-        #button_underline.connect("clicked", self.on_button_clicked,
-        #    self.tag_underline)
+        self.button_underline = ToggleToolButton("format-text-underline")
+        self.button_underline.set_tooltip(_("Underline"))
+        self.button_underline.props.accelerator = "<Ctrl>B"
+        self.button_underline.connect("toggled", lambda button: self.edit.toggle_underline())
+        edit_toolbar.insert(self.button_underline, -1)
 
         separator = Gtk.SeparatorToolItem()
         separator.props.draw = False

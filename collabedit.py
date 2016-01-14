@@ -9,6 +9,7 @@ from view import View
 
 from gi.repository import Gtk
 from gi.repository import Gdk
+from gi.repository import GObject
 
 try:
     from sugar3.presence.wrapper import CollabWrapper
@@ -20,6 +21,11 @@ except ImportError:
 
 class CollabEdit(Gtk.VBox):
 
+    __gsignals__ = {
+        "insert-char": (GObject.SIGNAL_RUN_FIRST, None, [int, int]),
+        "cursor-position-changed": (GObject.SIGNAL_RUN_FIRST, None, [int])
+    }
+
     def __init__(self, activity):
         Gtk.VBox.__init__(self)
 
@@ -27,8 +33,9 @@ class CollabEdit(Gtk.VBox):
         self.collab.connect('message', self.__message_cb)
         self.collab.connect('joined', self.__joined_cb)
 
-        self.view = View(self.collab)
+        self.view = View()
         self.view.connect("insert-char", self.__insert_char_cb)
+        self.view.connect("cursor-position-changed", self.__cursor_position_changed_cb)
         self.pack_start(self.view, True, True, 0)
 
     def __message_cb(self, collab, buddy, msg):
@@ -59,6 +66,25 @@ class CollabEdit(Gtk.VBox):
         if key in utils.LETTERS_KEYS:
             self.collab.post(dict(
                 action="insert",
-                key=Gdk.keyval_name(key)
+                key=Gdk.keyval_name(key),
                 position=position))
+
+    def __cursor_position_changed_cb(self, view, position):
+        self.collab.post(dict(
+            action="cursor_moved",
+            position=position))
+
+        self.emit("cursor-position-changed", position)
+
+    def toggle_bold(self):
+        self.view.toggle_bold()
+
+    def toggle_italic(self):
+        self.view.toggle_italic()
+
+    def toggle_underline(self):
+        self.view.toggle_underline()
+
+    def check_tag_at_offset(self, tag, position):
+        return self.view.check_tag_at_offset(tag, position)
 
