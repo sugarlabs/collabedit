@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from gettext import gettext as _
-
 import utils
 from view import View
-
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from gi.repository import Gdk
 from gi.repository import GObject
@@ -35,7 +34,8 @@ class CollabEdit(Gtk.VBox):
 
         self.view = View()
         self.view.connect("insert-char", self.__insert_char_cb)
-        self.view.connect("cursor-position-changed", self.__cursor_position_changed_cb)
+        self.view.connect("cursor-position-changed",
+                          self.__cursor_position_changed_cb)
         self.view.connect("tag-applied", self.__tag_applied_cb)
         self.view.connect("tag-removed", self.__tag_removed_cb)
         self.pack_start(self.view, True, True, 0)
@@ -52,10 +52,14 @@ class CollabEdit(Gtk.VBox):
             self.view.draw_other_cursor(msg.get("id"), msg.get("position"))
 
         elif action == "insert_tag":
-            self.view.insert_tag(msg.get("tag"), msg.get("start"), msg.get("end"))
+            self.view.insert_tag(msg.get("tag"),
+                                 msg.get("start"),
+                                 msg.get("end"))
 
         elif action == "remove_tag":
-            self.view.remove_tag(msg.get("tag"), msg.get("start"), msg.get("end"))
+            self.view.remove_tag(msg.get("tag"),
+                                 msg.get("start"),
+                                 msg.get("end"))
 
     def __joined_cb(self, sender):
         if self.collab._leader:
@@ -100,4 +104,3 @@ class CollabEdit(Gtk.VBox):
 
     def check_tag_at_offset(self, tag, position):
         return self.view.check_tag_at_offset(tag, position)
-

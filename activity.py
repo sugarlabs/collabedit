@@ -14,7 +14,6 @@ from sugar3.activity.widgets import StopButton
 from sugar3.activity.widgets import EditToolbar
 from sugar3.activity.widgets import ActivityToolbarButton
 from sugar3.graphics.toolbarbox import ToolbarBox
-from sugar3.graphics.toolbutton import ToolButton
 from sugar3.graphics.toolbarbox import ToolbarButton
 from sugar3.graphics.toggletoolbutton import ToggleToolButton
 
@@ -80,4 +79,3 @@ class CollabEditActivity(activity.Activity):
 
         self.toolbarbox.show_all()
         edit_toolbar.show_all()
-

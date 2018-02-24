@@ -372,6 +372,7 @@ class CollabWrapper(GObject.GObject):
         '''
         return self._leader
 
+
 FT_STATE_NONE = 0
 FT_STATE_PENDING = 1
 FT_STATE_ACCEPTED = 2
@@ -406,7 +407,6 @@ class _BaseFileTransfer(GObject.GObject):
         state (FT_STATE_*), current state of the transfer
         transferred_bytes (int), number of bytes transfered so far
     '''
-
 
     def __init__(self):
         GObject.GObject.__init__(self)

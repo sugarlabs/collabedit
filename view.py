@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import utils
-
+import gi
+gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-from gi.repository import Gdk
 from gi.repository import Pango
 from gi.repository import GObject
 
@@ -121,7 +121,7 @@ class View(Gtk.ScrolledWindow):
 
             return False
 
-        return True;
+        return True
 
     def __cursor_position_cb(self, buffer, *args):
         self.emit("cursor-position-changed", self.buffer.get_cursor_position())
@@ -175,4 +175,3 @@ class View(Gtk.ScrolledWindow):
         start = self.buffer.get_iter_at_offset(start)
         end = self.buffer.get_iter_at_offset(end)
         self.buffer.remove_tag_by_name(tag, start, end)
-
