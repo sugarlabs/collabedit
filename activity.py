@@ -65,7 +65,7 @@ class CollabEditActivity(activity.Activity):
 
         self.button_underline = ToggleToolButton("format-text-underline")
         self.button_underline.set_tooltip(_("Underline"))
-        self.button_underline.props.accelerator = "<Ctrl>B"
+        self.button_underline.props.accelerator = "<Ctrl>U"
         self.button_underline.connect("toggled", lambda button: self.edit.toggle_underline())
         edit_toolbar.insert(self.button_underline, -1)
 
