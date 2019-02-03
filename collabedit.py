@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import utils
 from view import View
 import gi
 gi.require_version('Gtk', '3.0')
@@ -69,8 +68,7 @@ class CollabEdit(Gtk.VBox):
                               res_id=10))  # How get an unique id?
 
     def __insert_char_cb(self, view, key, position):
-        if key in utils.LETTERS_KEYS:
-            self.collab.post(dict(action="insert",
+        self.collab.post(dict(action="insert",
                                   key=Gdk.keyval_name(key),
                                   position=position))
 

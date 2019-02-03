@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import utils
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -116,12 +115,8 @@ class View(Gtk.ScrolledWindow):
 
     def __key_press_event_cb(self, widget, event):
         key = event.keyval
-        if key in utils.LETTERS_KEYS or key in utils.OTHER_KEYS:
-            self.emit("insert-char", key, self.buffer.get_cursor_position())
-
-            return False
-
-        return True
+        self.emit("insert-char", key, self.buffer.get_cursor_position())
+        return False
 
     def __cursor_position_cb(self, buffer, *args):
         self.emit("cursor-position-changed", self.buffer.get_cursor_position())
