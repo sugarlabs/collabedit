@@ -2,7 +2,7 @@
 name = CollabEdit
 activity_version = 1
 bundle_id = org.sugarlabs.CollabEdit
-exec = sugar-activity activity.CollabEditActivity
+exec = sugar-activity3 activity.CollabEditActivity
 icon = icon
 license = GPLv3+
 repository = https://github.com/sugarlabs/collabedit.git
