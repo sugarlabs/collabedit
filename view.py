@@ -23,7 +23,8 @@ class Buffer(Gtk.TextBuffer):
     def __make_tags(self):
         self.tag_bold = self.create_tag("bold", weight=Pango.Weight.BOLD)
         self.tag_italic = self.create_tag("italic", style=Pango.Style.ITALIC)
-        self.tag_underline = self.create_tag("underline", underline=Pango.Underline.SINGLE)
+        self.tag_underline = self.create_tag(
+            "underline", underline=Pango.Underline.SINGLE)
         self.tag_curosr = self.create_tag("cursor", background="green")
 
     def __get_tag_by_name(self, tag):
@@ -104,7 +105,9 @@ class View(Gtk.ScrolledWindow):
         self.cursors = {}
 
         self.buffer = Buffer()
-        self.buffer.connect("notify::cursor-position", self.__cursor_position_cb)
+        self.buffer.connect(
+            "notify::cursor-position",
+            self.__cursor_position_cb)
         self.buffer.connect("tag-applied", self.__tag_applied_cb)
         self.buffer.connect("tag-removed", self.__tag_removed_cb)
 

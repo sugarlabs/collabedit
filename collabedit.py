@@ -69,8 +69,8 @@ class CollabEdit(Gtk.VBox):
 
     def __insert_char_cb(self, view, key, position):
         self.collab.post(dict(action="insert",
-                                  key=Gdk.keyval_name(key),
-                                  position=position))
+                              key=Gdk.keyval_name(key),
+                              position=position))
 
     def __cursor_position_changed_cb(self, view, position):
         self.collab.post(dict(action="cursor_moved",

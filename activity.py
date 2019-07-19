@@ -28,7 +28,9 @@ class CollabEditActivity(activity.Activity):
         self.set_toolbar_box(self.toolbarbox)
 
         self.edit = collabedit.CollabEdit(self)
-        self.edit.connect("cursor-position-changed", self._cursor_positon_changed_cb)
+        self.edit.connect(
+            "cursor-position-changed",
+            self._cursor_positon_changed_cb)
         self.set_canvas(self.edit)
 
         self.setup_toolbar()
@@ -36,9 +38,12 @@ class CollabEditActivity(activity.Activity):
         self.show_all()
 
     def _cursor_positon_changed_cb(self, edit, pos):
-        self.button_bold.props.active = self.edit.check_tag_at_offset("bold", pos)
-        self.button_italic.props.active = self.edit.check_tag_at_offset("italic", pos)
-        self.button_underline.props.active = self.edit.check_tag_at_offset("underline", pos)
+        self.button_bold.props.active = self.edit.check_tag_at_offset(
+            "bold", pos)
+        self.button_italic.props.active = self.edit.check_tag_at_offset(
+            "italic", pos)
+        self.button_underline.props.active = self.edit.check_tag_at_offset(
+            "underline", pos)
 
     def setup_toolbar(self):
         activity_button = ActivityToolbarButton(self)
@@ -47,26 +52,31 @@ class CollabEditActivity(activity.Activity):
         self.toolbar.insert(Gtk.SeparatorToolItem(), -1)
 
         edit_toolbar = EditToolbar()
-        self.toolbar.insert(ToolbarButton(page=edit_toolbar, icon_name="toolbar-edit"), -1)
+        self.toolbar.insert(
+            ToolbarButton(
+                page=edit_toolbar, icon_name="toolbar-edit"), -1)
 
         edit_toolbar.insert(Gtk.SeparatorToolItem(), -1)
 
         self.button_bold = ToggleToolButton("format-text-bold")
         self.button_bold.set_tooltip(_("Bold"))
         self.button_bold.props.accelerator = "<Ctrl>B"
-        self.button_bold.connect("toggled", lambda button: self.edit.toggle_bold())
+        self.button_bold.connect(
+            "toggled", lambda button: self.edit.toggle_bold())
         edit_toolbar.insert(self.button_bold, -1)
 
         self.button_italic = ToggleToolButton("format-text-italic")
         self.button_italic.set_tooltip(_("Italic"))
         self.button_italic.props.accelerator = "<Ctrl>I"
-        self.button_italic.connect("toggled", lambda button: self.edit.toggle_italic())
+        self.button_italic.connect(
+            "toggled", lambda button: self.edit.toggle_italic())
         edit_toolbar.insert(self.button_italic, -1)
 
         self.button_underline = ToggleToolButton("format-text-underline")
         self.button_underline.set_tooltip(_("Underline"))
         self.button_underline.props.accelerator = "<Ctrl>U"
-        self.button_underline.connect("toggled", lambda button: self.edit.toggle_underline())
+        self.button_underline.connect(
+            "toggled", lambda button: self.edit.toggle_underline())
         edit_toolbar.insert(self.button_underline, -1)
 
         separator = Gtk.SeparatorToolItem()
